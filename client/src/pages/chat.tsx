@@ -173,6 +173,12 @@ export default function ChatPage() {
                 <h3 className="text-lg font-semibold mb-2">Start a conversation</h3>
                 <p className="text-muted-foreground max-w-md">
                   Send a message to start chatting with {selectedRole?.name}.
+                  <span className="block mt-2 text-xs italic">
+                    <span className="font-medium">Pro tip:</span> Use browser commands in your queries:
+                    <code className="mx-1">[BROWSE_URL:https://example.com]</code>
+                    <code className="mx-1">[SEARCH_WEB:query]</code>
+                    <code className="mx-1">[CLICK_ELEMENT:#button]</code>
+                  </span>
                 </p>
               </div>
             ) : (
@@ -244,14 +250,24 @@ export default function ChatPage() {
           </div>
           
           <form onSubmit={handleSubmit} className="flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={`Message ${selectedRole?.name}...`}
-              className="flex-1 p-3 rounded-lg border bg-background"
-              disabled={queryMutation.isPending || (isStreaming && streamedResponse !== '')}
-            />
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={`Message ${selectedRole?.name}...`}
+                className="flex-1 p-3 rounded-lg border bg-background w-full"
+                disabled={queryMutation.isPending || (isStreaming && streamedResponse !== '')}
+              />
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                <span 
+                  className="text-xs text-muted-foreground cursor-help"
+                  title="Use browser commands: [BROWSE_URL:url], [SEARCH_WEB:query], [CLICK_ELEMENT:selector], [FILL_FORM:selector=value]"
+                >
+                  ℹ️ Browser commands
+                </span>
+              </div>
+            </div>
             <Button 
               type="submit" 
               disabled={!input.trim() || queryMutation.isPending || (isStreaming && streamedResponse !== '')}

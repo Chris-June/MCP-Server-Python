@@ -279,26 +279,89 @@ The platform includes an integrated web browsing capability that allows AI advis
 
 - **Browser Session Management**: Create and manage browser sessions for web research
 - **Web Navigation**: Browse websites and follow links to gather information
-- **Content Extraction**: Extract and analyze web page content for insights
+- **Content Extraction**: Extract and analyze web page content with multiple extraction modes:
+  - **Auto**: Intelligently extracts main content
+  - **Article**: Focuses on article content for news and blog sites
+  - **Full**: Retrieves the complete page content
+  - **Structured**: Extracts structured data (headings, links, images, forms, etc.)
 - **Screenshot Capture**: Take screenshots of web pages for reference
 - **Interactive Elements**: Click buttons, fill forms, and interact with web content
 - **JavaScript Execution**: Run custom scripts for advanced web interactions
+- **Form Filling**: Automatically fill out forms with specified values
+- **Mock Sessions**: Fallback mechanism when browser initialization fails
+- **Session History**: Track and retrieve browsing history for each session
+- **Interactive Tooltips**: Helpful tooltips explaining how to use browser features
+- **Command Reference**: Clear documentation of special commands for browser interaction
 
 #### Using Web Browsing
 
 You can use web browsing in two ways:
 
 1. **Through the Web Browser Interface**: Access the browser interface from the role detail page by clicking the "Show Browser" button in the Web Research section.
+   - Navigate to websites using the URL bar
+   - View page content in the browser panel
+   - Take screenshots for reference
+   - Interact with web elements through the interface
 
 2. **Using Special Commands in Queries**: Include special commands in your queries to the AI advisor:
-   - `[SEARCH_WEB:query]` - Search the web for information
-   - `[BROWSE_URL:https://example.com]` - Browse a specific URL
+   - `[SEARCH_WEB:query]` - Search the web for information (uses DuckDuckGo)
+   - `[BROWSE_URL:https://example.com]` - Browse a specific URL with optional extraction mode
+   - `[BROWSE_URL:https://example.com:auto|article|full|structured]` - Browse with specific extraction mode
+   - `[CLICK_ELEMENT:#submit-button]` - Click an element on the current page
+   - `[EXTRACT_ELEMENT:.product-info]` - Extract text from specific elements
+   - `[FILL_FORM:#email=user@example.com,#password=secret]` - Fill out a form
 
-Example query: "What are the latest small business tax deductions [SEARCH_WEB:small business tax deductions 2025]?"
+Example queries:
+- "What are the latest small business tax deductions [SEARCH_WEB:small business tax deductions 2025]?"
+- "Analyze this article [BROWSE_URL:https://example.com/article:article]"
+- "Extract product information [BROWSE_URL:https://store.com/product:structured]"
+- "Log into my account [FILL_FORM:#email=user@example.com,#password=secret] and then [CLICK_ELEMENT:#login-button]"
+
+The browser interface includes helpful tooltips that explain these commands and how to use them effectively. Hover over the information icons (ℹ️) next to feature names to see detailed explanations.
 
 #### API Endpoints
 
 The following API endpoints are available for web browsing:
+
+- **POST /api/browser/sessions** - Create a new browser session
+- **DELETE /api/browser/sessions/{session_id}** - Close a browser session
+- **POST /api/browser/sessions/{session_id}/navigate** - Navigate to a URL
+- **GET /api/browser/sessions/{session_id}/content** - Get the current page content
+- **POST /api/browser/sessions/{session_id}/screenshot** - Take a screenshot
+- **POST /api/browser/sessions/{session_id}/click** - Click an element on the page
+- **POST /api/browser/sessions/{session_id}/fill** - Fill out an input field
+- **POST /api/browser/sessions/{session_id}/evaluate** - Execute JavaScript in the browser
+- **GET /api/browser/sessions/{session_id}/history** - Get the browsing history
+
+#### Implementation Details
+
+The web browsing capability is implemented using:
+
+- **Pyppeteer**: A Python port of Puppeteer for browser automation
+- **Headless Chrome**: For browser rendering and interaction
+- **FastAPI**: For RESTful API endpoints
+- **React Components**: For frontend browser interface
+
+#### Browser Integration with AI
+
+The browser service is integrated with the AI processor through the `BrowserIntegration` class, which:
+
+1. Maps role IDs to browser sessions
+2. Processes special commands in user queries
+3. Extracts relevant information from web pages using multiple extraction modes
+4. Supports structured data extraction for better information organization
+5. Enables interactive web page manipulation through element selection and form filling
+6. Incorporates web content into AI responses with appropriate formatting
+
+This integration allows AI advisors to seamlessly incorporate web information into their responses, providing more accurate and up-to-date advice based on current information available on the web.
+
+#### Example Use Cases
+
+- **Market Research**: Research industry trends and competitor analysis
+- **Financial Guidance**: Look up current tax regulations or financial strategies
+- **Technical Support**: Find documentation or troubleshooting guides
+- **Legal Advice**: Research relevant laws and regulations
+- **Marketing Strategy**: Analyze current marketing trends and best practices
 
 ```
 POST /api/v1/browser/sessions - Create a new browser session
