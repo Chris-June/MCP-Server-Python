@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
-from typing import List, Optional
+from fastapi import APIRouter, Depends, Request, HTTPException, Response
+from typing import List, Optional, AsyncGenerator
+from fastapi.responses import StreamingResponse
 from app.models.role import Role, RoleCreate, RoleUpdate, RoleResponse, RolesResponse, ProcessRequest, ProcessResponse
 from app.services.role_service import RoleService
 from app.config import TONE_PROFILES
@@ -53,6 +54,25 @@ async def process_query(request: ProcessRequest, role_service: RoleService = Dep
         role_id=request.role_id,
         query=request.query,
         response=response
+    )
+
+async def generate_stream_response(role_id: str, query: str, custom_instructions: Optional[str], role_service: RoleService) -> AsyncGenerator[str, None]:
+    """Generate a streaming response for a query"""
+    async for chunk in role_service.process_query_stream(role_id, query, custom_instructions):
+        yield f"data: {chunk}\n\n"
+    yield "data: [DONE]\n\n"
+
+@router.post("/process/stream", summary="Process a query using a specific role with streaming response")
+async def process_query_stream(request: ProcessRequest, role_service: RoleService = Depends(get_role_service)):
+    """Process a query using a specific role with streaming response"""
+    return StreamingResponse(
+        generate_stream_response(
+            request.role_id,
+            request.query,
+            request.custom_instructions,
+            role_service
+        ),
+        media_type="text/event-stream"
     )
 
 @router.get("/tones", summary="Get all available tone profiles")

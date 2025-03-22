@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, AsyncGenerator
 from fastapi import HTTPException
 from app.models.role import Role, RoleCreate, RoleUpdate
 from app.models.memory import Memory, MemoryCreate
@@ -156,7 +156,7 @@ class RoleService:
         role = await self.get_role(role_id)
         
         # Get tone profile
-        tone_profile = TONE_PROFILES.get(role.tone, TONE_PROFILES["professional"])
+        tone_profile = TONE_PROFILES.get(role.tone, TONE_PROFILES["strategic"])
         
         # Get relevant memories
         memories = await self.memory_service.get_memories_by_role_id(role_id)
@@ -222,3 +222,47 @@ class RoleService:
         )
         
         return response
+    
+    async def process_query_stream(self, role_id: str, query: str, custom_instructions: Optional[str] = None) -> AsyncGenerator[str, None]:
+        """Process a query using a specific role with streaming response
+        
+        Args:
+            role_id: The ID of the role to use
+            query: The query to process
+            custom_instructions: Optional custom instructions
+            
+        Yields:
+            Chunks of the processed response
+        """
+        # Generate query embedding for memory retrieval
+        embedding = await self.ai_processor.create_embedding(query)
+        
+        # Get relevant memories
+        relevant_memories = await self.memory_service.get_relevant_memories(
+            role_id, query, embedding, limit=5
+        )
+        
+        # Generate the system prompt
+        system_prompt = await self.generate_complete_prompt(role_id, custom_instructions)
+        
+        # Add relevant memories to the prompt
+        if relevant_memories:
+            memory_text = "\n\n".join([f"Memory: {memory.content}" for memory in relevant_memories])
+            system_prompt += f"\n\nRelevant memories for this query:\n{memory_text}"
+        
+        # Generate the streaming response
+        full_response = ""
+        async for chunk in self.ai_processor.generate_response_stream(system_prompt, query):
+            full_response += chunk
+            yield chunk
+        
+        # Store the query and response as session memories
+        await self.memory_service.store_memory(
+            MemoryCreate(
+                role_id=role_id,
+                content=f"User asked: {query}\nAssistant responded: {full_response}",
+                type="session",
+                importance="medium"
+            ),
+            embedding=embedding
+        )

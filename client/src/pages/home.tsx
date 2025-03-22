@@ -7,23 +7,24 @@ import { Button } from '@/components/ui/button'
 const features = [
   {
     icon: <Brain className="h-10 w-10 text-primary" />,
-    title: 'Role-Specific AI',
-    description: 'Interact with AI agents that have specialized expertise and tone profiles.',
+    title: 'Executive Advisory Team',
+    description: 'Access a full suite of AI-powered executive advisors specializing in different business functions.',
   },
   {
     icon: <MessageSquare className="h-10 w-10 text-primary" />,
-    title: 'Contextual Memory',
-    description: 'AI agents remember important information and use it to provide more relevant responses.',
+    title: 'Business Dashboard',
+    description: 'Visualize key business metrics, advisor insights, and track progress towards your goals.',
   },
   {
     icon: <Users className="h-10 w-10 text-primary" />,
-    title: 'Custom Roles',
-    description: 'Create and manage custom AI roles with specific expertise domains and instructions.',
+    title: 'Personalized Guidance',
+    description: 'Receive tailored advice based on your specific business context and challenges.',
   },
 ]
 
 export default function HomePage() {
   return (
+    
     <div className="flex flex-col gap-12">
       <section className="text-center">
         <motion.div
@@ -33,11 +34,11 @@ export default function HomePage() {
           className="max-w-3xl mx-auto"
         >
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Role-Specific Context
-            <span className="text-primary"> MCP Client</span>
+            Small Business
+            <span className="text-primary"> Executive Advisors</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Interact with AI agents that have specialized expertise, memory, and personality.
+            AI-powered executive guidance to help your small business thrive.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg">

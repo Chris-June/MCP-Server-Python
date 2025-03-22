@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, User, Bot, Loader2 } from 'lucide-react'
+import { Send, User, Bot, Loader2, Zap } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
-import { fetchRoles, processQuery } from '@/lib/api'
+import { fetchRoles, processQuery, processQueryStream } from '@/lib/api'
 import type { Role } from '@/types'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
@@ -25,6 +25,8 @@ export default function ChatPage() {
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(initialRoleId)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
+  const [isStreaming, setIsStreaming] = useState(true)
+  const [streamedResponse, setStreamedResponse] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   const { data: roles, isLoading: rolesLoading } = useQuery({
@@ -74,10 +76,52 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, newMessage])
     setInput('')
     
-    queryMutation.mutate({
-      role_id: selectedRoleId,
-      query: input,
-    })
+    if (isStreaming) {
+      // Create a placeholder message for the streaming response
+      const placeholderId = Date.now().toString() + '-streaming'
+      const placeholderMessage: Message = {
+        id: placeholderId,
+        role: 'assistant',
+        content: '',
+        timestamp: new Date(),
+      }
+      
+      setMessages(prev => [...prev, placeholderMessage])
+      setStreamedResponse('')
+      
+      // Use streaming API
+      processQueryStream(
+        { role_id: selectedRoleId, query: input },
+        (chunk) => {
+          setStreamedResponse(prev => prev + chunk)
+          // Update the placeholder message with the streamed content
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === placeholderId 
+                ? { ...msg, content: msg.content + chunk } 
+                : msg
+            )
+          )
+        }
+      ).then(() => {
+        // Reset the streamedResponse state when streaming is complete
+        setStreamedResponse('')
+      }).catch(error => {
+        toast({
+          title: 'Error',
+          description: `Failed to process streaming query: ${error.message}`,
+          variant: 'destructive',
+        })
+        // Also reset on error
+        setStreamedResponse('')
+      })
+    } else {
+      // Use regular API
+      queryMutation.mutate({
+        role_id: selectedRoleId,
+        query: input,
+      })
+    }
   }
   
   const selectedRole = roles?.find(role => role.id === selectedRoleId)
@@ -179,6 +223,26 @@ export default function ChatPage() {
             )}
           </div>
           
+          <div className="flex items-center justify-end mb-2">
+            <div className="flex items-center gap-2">
+              <Zap className={`h-4 w-4 ${isStreaming ? 'text-primary' : 'text-muted-foreground'}`} />
+              <span className="text-sm">Streaming</span>
+              <button
+                type="button"
+                onClick={() => setIsStreaming(!isStreaming)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                  isStreaming ? 'bg-primary' : 'bg-input'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-background shadow-lg ring-0 transition-transform ${
+                    isStreaming ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+          
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
               type="text"
@@ -186,10 +250,13 @@ export default function ChatPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder={`Message ${selectedRole?.name}...`}
               className="flex-1 p-3 rounded-lg border bg-background"
-              disabled={queryMutation.isPending}
+              disabled={queryMutation.isPending || (isStreaming && streamedResponse !== '')}
             />
-            <Button type="submit" disabled={!input.trim() || queryMutation.isPending}>
-              {queryMutation.isPending ? (
+            <Button 
+              type="submit" 
+              disabled={!input.trim() || queryMutation.isPending || (isStreaming && streamedResponse !== '')}
+            >
+              {queryMutation.isPending || (isStreaming && streamedResponse !== '') ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Send className="h-4 w-4" />

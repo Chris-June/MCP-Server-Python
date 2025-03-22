@@ -81,6 +81,53 @@ export async function processQuery(request: ProcessQueryRequest): Promise<Proces
   return await response.json()
 }
 
+export async function processQueryStream(request: ProcessQueryRequest, onChunk: (chunk: string) => void): Promise<string> {
+  const response = await fetch(`${API_BASE}/roles/process/stream`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  })
+  
+  if (!response.ok) {
+    throw new Error('Failed to process streaming query')
+  }
+  
+  const reader = response.body?.getReader()
+  const decoder = new TextDecoder()
+  let fullResponse = ''
+  
+  if (!reader) {
+    throw new Error('Stream reader not available')
+  }
+  
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      
+      const chunk = decoder.decode(value, { stream: true })
+      const lines = chunk.split('\n\n')
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.substring(6)
+          if (data === '[DONE]') continue
+          onChunk(data)
+          fullResponse += data
+        }
+      }
+    }
+    return fullResponse
+  } catch (error) {
+    console.error('Error reading stream:', error)
+    throw error
+  } finally {
+    reader.releaseLock()
+  }
+}
+
 export async function fetchMemories(roleId: string): Promise<Memory[]> {
   const response = await fetch(`${API_BASE}/memories/${roleId}`)
   if (!response.ok) {

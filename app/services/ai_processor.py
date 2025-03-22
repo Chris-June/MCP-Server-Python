@@ -1,6 +1,6 @@
 from openai import AsyncOpenAI
 import asyncio
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, AsyncGenerator
 from app.config import settings
 
 class AIProcessor:
@@ -40,6 +40,41 @@ class AIProcessor:
             # In a production environment, add proper error handling and logging
             print(f"Error generating response: {e}")
             return f"I'm sorry, I encountered an error: {str(e)}"
+    
+    async def generate_response_stream(self, system_prompt: str, user_prompt: str) -> AsyncGenerator[str, None]:
+        """Generate a streaming response using the OpenAI API
+        
+        Args:
+            system_prompt: The system prompt to use
+            user_prompt: The user prompt to use
+            
+        Yields:
+            Chunks of the generated response
+        """
+        try:
+            stream = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=1000,
+                top_p=1.0,
+                frequency_penalty=0.0,
+                presence_penalty=0.0,
+                stream=True
+            )
+            
+            async for chunk in stream:
+                if chunk.choices and len(chunk.choices) > 0:
+                    content = chunk.choices[0].delta.content
+                    if content is not None:
+                        yield content
+        except Exception as e:
+            # In a production environment, add proper error handling and logging
+            print(f"Error generating streaming response: {e}")
+            yield f"I'm sorry, I encountered an error: {str(e)}"
     
     async def create_embedding(self, text: str) -> List[float]:
         """Create an embedding vector for the given text

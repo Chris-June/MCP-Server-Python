@@ -10,7 +10,7 @@ class Role(BaseModel):
     description: str = Field(..., description="Description of the role's purpose")
     instructions: str = Field(..., description="Custom instructions for the role")
     domains: List[str] = Field(default_factory=list, description="Areas of expertise")
-    tone: str = Field("professional", description="Communication tone (professional, casual, etc.)")
+    tone: str = Field("strategic", description="Communication tone (strategic, analytical, creative, etc.)")
     system_prompt: str = Field(..., description="Base system prompt for this role")
     is_default: bool = Field(False, description="Whether this is a default system role")
 
@@ -21,7 +21,7 @@ class RoleCreate(BaseModel):
     description: str = Field(..., description="Description of the role's purpose")
     instructions: str = Field(..., description="Custom instructions for the role")
     domains: List[str] = Field(default_factory=list, description="Areas of expertise")
-    tone: str = Field("professional", description="Communication tone (professional, casual, etc.)")
+    tone: str = Field("strategic", description="Communication tone (strategic, analytical, creative, etc.)")
     system_prompt: str = Field(..., description="Base system prompt for this role")
 
 class RoleUpdate(BaseModel):
@@ -30,7 +30,7 @@ class RoleUpdate(BaseModel):
     description: Optional[str] = Field(None, description="Description of the role's purpose")
     instructions: Optional[str] = Field(None, description="Custom instructions for the role")
     domains: Optional[List[str]] = Field(None, description="Areas of expertise")
-    tone: Optional[str] = Field(None, description="Communication tone (professional, casual, etc.)")
+    tone: Optional[str] = Field(None, description="Communication tone (strategic, analytical, creative, etc.)")
     system_prompt: Optional[str] = Field(None, description="Base system prompt for this role")
 
 class RoleResponse(BaseModel):

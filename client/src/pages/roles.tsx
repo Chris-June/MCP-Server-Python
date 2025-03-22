@@ -19,7 +19,7 @@ export default function RolesPage() {
     description: '',
     instructions: '',
     domains: [],
-    tone: 'professional',
+    tone: 'strategic',
     system_prompt: ''
   })
   const [newDomain, setNewDomain] = useState('')
@@ -39,7 +39,7 @@ export default function RolesPage() {
         description: '',
         instructions: '',
         domains: [],
-        tone: 'professional',
+        tone: 'strategic',
         system_prompt: ''
       })
       setNewDomain('')
@@ -235,11 +235,13 @@ export default function RolesPage() {
                   className="w-full p-2 border rounded-md bg-background"
                   required
                 >
-                  <option value="professional">Professional</option>
-                  <option value="casual">Casual</option>
-                  <option value="friendly">Friendly</option>
-                  <option value="technical">Technical</option>
-                  <option value="formal">Formal</option>
+                  <option value="strategic">Strategic</option>
+                  <option value="analytical">Analytical</option>
+                  <option value="creative">Creative</option>
+                  <option value="supportive">Supportive</option>
+                  <option value="methodical">Methodical</option>
+                  <option value="persuasive">Persuasive</option>
+                  <option value="consultative">Consultative</option>
                 </select>
               </div>
               
