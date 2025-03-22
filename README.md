@@ -79,6 +79,7 @@ This platform allows you to:
 - **Business Metrics**: Track revenue, customers, conversion rates, and expenses
 - **Advisor Insights**: View and manage business insights from different executive advisors
 - **Business Goals**: Set and track progress towards important business milestones
+- **Web Browsing Capability**: Integrated web browser for AI-assisted research and information gathering
 
 ## Architecture
 
@@ -145,6 +146,12 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 ```bash
 pip install -r requirements.txt
+```
+
+4. Install web browser dependencies:
+
+```bash
+pip install -r requirements-browser.txt
 ```
 
 ### Client Setup
@@ -263,6 +270,48 @@ Memories provide context for AI roles, allowing them to maintain information acr
 - **importance**: Importance level (affects retrieval priority)
 - **embedding**: Vector representation for semantic search
 - **created_at**: Timestamp when the memory was created
+
+### Web Browsing
+
+The platform includes an integrated web browsing capability that allows AI advisors to access and interact with web content. This feature enables advisors to perform research, gather information, and provide more contextually relevant responses based on up-to-date information from the web.
+
+#### Web Browsing Features
+
+- **Browser Session Management**: Create and manage browser sessions for web research
+- **Web Navigation**: Browse websites and follow links to gather information
+- **Content Extraction**: Extract and analyze web page content for insights
+- **Screenshot Capture**: Take screenshots of web pages for reference
+- **Interactive Elements**: Click buttons, fill forms, and interact with web content
+- **JavaScript Execution**: Run custom scripts for advanced web interactions
+
+#### Using Web Browsing
+
+You can use web browsing in two ways:
+
+1. **Through the Web Browser Interface**: Access the browser interface from the role detail page by clicking the "Show Browser" button in the Web Research section.
+
+2. **Using Special Commands in Queries**: Include special commands in your queries to the AI advisor:
+   - `[SEARCH_WEB:query]` - Search the web for information
+   - `[BROWSE_URL:https://example.com]` - Browse a specific URL
+
+Example query: "What are the latest small business tax deductions [SEARCH_WEB:small business tax deductions 2025]?"
+
+#### API Endpoints
+
+The following API endpoints are available for web browsing:
+
+```
+POST /api/v1/browser/sessions - Create a new browser session
+DELETE /api/v1/browser/sessions/{session_id} - Close a browser session
+POST /api/v1/browser/sessions/{session_id}/navigate - Navigate to a URL
+POST /api/v1/browser/sessions/{session_id}/screenshot - Take a screenshot
+POST /api/v1/browser/sessions/{session_id}/click - Click an element
+POST /api/v1/browser/sessions/{session_id}/fill - Fill an input field
+POST /api/v1/browser/sessions/{session_id}/evaluate - Execute JavaScript
+GET /api/v1/browser/sessions/{session_id}/history - Get browsing history
+```
+
+For more detailed information, refer to the [Web Browsing Documentation](docs/web_browsing.md).
 
 ### Query Processing
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Globe } from 'lucide-react'
 
 
 
@@ -11,6 +11,7 @@ import type { Role, Memory } from '@/types'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { formatDate } from '@/lib/utils'
+import { BrowserPanel } from '@/components/BrowserPanel'
 
 export default function RoleDetailPage() {
   const { roleId } = useParams<{ roleId: string }>()
@@ -20,6 +21,7 @@ export default function RoleDetailPage() {
   
   const [formData, setFormData] = useState<Partial<Role>>({})
   const [isEditing, setIsEditing] = useState(false)
+  const [showBrowser, setShowBrowser] = useState(false)
   
   const { data: role, isLoading: roleLoading, error: roleError } = useQuery<Role>({
     queryKey: ['role', roleId],
@@ -312,17 +314,19 @@ export default function RoleDetailPage() {
         </div>
         
         <div>
-          <div className="border rounded-lg p-6 bg-card">
+          <div className="border rounded-lg p-6 bg-card mb-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold">Memories</h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClearMemories}
-                disabled={!memories || memories.length === 0}
-              >
-                Clear All
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearMemories}
+                  disabled={!memories || memories.length === 0}
+                >
+                  Clear All
+                </Button>
+              </div>
             </div>
             
             {memoriesLoading ? (
@@ -360,6 +364,40 @@ export default function RoleDetailPage() {
                 </p>
               </div>
             )}
+          </div>
+          
+          <div className="border rounded-lg p-6 bg-card">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">Web Research</h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowBrowser(!showBrowser)}
+              >
+                <Globe className="h-4 w-4 mr-2" />
+                {showBrowser ? 'Hide Browser' : 'Show Browser'}
+              </Button>
+            </div>
+            
+            {showBrowser && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <BrowserPanel roleId={roleId!} onClose={() => setShowBrowser(false)} />
+              </motion.div>
+            )}
+            
+            <div className="text-sm text-muted-foreground">
+              <p>Use the web browser to research information that can help this AI advisor provide better responses.</p>
+              <p className="mt-2">You can also use special commands in your queries:</p>
+              <ul className="list-disc pl-5 mt-2">
+                <li><code>[SEARCH_WEB:query]</code> - Search the web for information</li>
+                <li><code>[BROWSE_URL:https://example.com]</code> - Browse a specific URL</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

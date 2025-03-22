@@ -10,6 +10,7 @@ const navItems = [
   { path: '/dashboard', label: 'Dashboard' },
   { path: '/roles', label: 'Advisors' },
   { path: '/chat', label: 'Consult' },
+  { path: '/browser', label: 'Web Browser' },
 ]
 
 export default function Layout() {

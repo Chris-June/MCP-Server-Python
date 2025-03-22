@@ -12,6 +12,8 @@
 - ✅ State management with React Query
 - ✅ Centralized type definitions for better TypeScript integration
 - ✅ Role creation form with dynamic domain management, detailed field descriptions, and helpful placeholder examples
+- ✅ Web browsing capability with Puppeteer integration
+- ✅ Role-detail page integration with web browser for research
 
 ## Immediate Tasks
 - [ ] Set up a valid OpenAI API key in the .env file (required for query processing)

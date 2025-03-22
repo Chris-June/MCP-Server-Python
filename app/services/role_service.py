@@ -208,7 +208,7 @@ class RoleService:
             system_prompt += f"\n\nRelevant memories for this query:\n{memory_text}"
         
         # Generate the response
-        response = await self.ai_processor.generate_response(system_prompt, query)
+        response = await self.ai_processor.generate_response(system_prompt, query, role_id=role_id)
         
         # Store the query and response as session memories
         await self.memory_service.store_memory(
@@ -252,7 +252,7 @@ class RoleService:
         
         # Generate the streaming response
         full_response = ""
-        async for chunk in self.ai_processor.generate_response_stream(system_prompt, query):
+        async for chunk in self.ai_processor.generate_response_stream(system_prompt, query, role_id=role_id):
             full_response += chunk
             yield chunk
         

@@ -2,28 +2,37 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.config import settings
-from app.routes import role_routes, memory_routes, healthcheck
+from app.routes import role_routes, memory_routes, healthcheck, browser_routes
 from app.services.role_service import RoleService
 from app.services.memory_service import MemoryService
 from app.services.ai_processor import AIProcessor
+from app.services.web_browser.browser_service import BrowserService
+from app.services.web_browser.browser_integration import BrowserIntegration
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialize services and cleanup on shutdown"""
     # Initialize services
-    ai_processor = AIProcessor()
+    browser_service = BrowserService()
+    browser_integration = BrowserIntegration(browser_service)
+    ai_processor = AIProcessor(browser_integration=browser_integration)
     memory_service = MemoryService()
     role_service = RoleService(memory_service, ai_processor)
+    
+    # Initialize browser service
+    await browser_service.initialize()
     
     # Add services to app state
     app.state.ai_processor = ai_processor
     app.state.memory_service = memory_service
     app.state.role_service = role_service
+    app.state.browser_service = browser_service
     
     yield
     
     # Clean up resources
     await memory_service.close()
+    await browser_service.close()
 
 # Create FastAPI app
 app = FastAPI(
@@ -46,6 +55,7 @@ app.add_middleware(
 app.include_router(healthcheck.router, tags=["Health"])
 app.include_router(role_routes.router, prefix=settings.api_prefix, tags=["Roles"])
 app.include_router(memory_routes.router, prefix=settings.api_prefix, tags=["Memory"])
+app.include_router(browser_routes.router, prefix=settings.api_prefix + "/browser", tags=["Browser"])
 
 # Root endpoint
 @app.get("/", tags=["Root"])

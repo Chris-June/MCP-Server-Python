@@ -8,6 +8,7 @@ import RolesPage from '@/pages/roles'
 import RoleDetailPage from '@/pages/role-detail'
 import ChatPage from '@/pages/chat'
 import DashboardPage from '@/pages/dashboard'
+import BrowserPage from '@/pages/browser'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="roles" element={<RolesPage />} />
           <Route path="roles/:roleId" element={<RoleDetailPage />} />
           <Route path="chat" element={<ChatPage />} />
+          <Route path="browser" element={<BrowserPage />} />
         </Route>
       </Routes>
     </ThemeProvider>
