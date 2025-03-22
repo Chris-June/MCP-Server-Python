@@ -8,10 +8,18 @@ export interface CreateMemoryRequest {
 }
 
 // API Client
-const API_BASE = '/api/v1'
+const API_BASE = 'http://localhost:8000/api/v1'
+
+// Enable CORS for development
+const fetchOptions = {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include' as RequestCredentials
+}
 
 export async function fetchRoles(): Promise<Role[]> {
-  const response = await fetch(`${API_BASE}/roles`)
+  const response = await fetch(`${API_BASE}/roles`, fetchOptions)
   if (!response.ok) {
     throw new Error('Failed to fetch roles')
   }
@@ -20,7 +28,7 @@ export async function fetchRoles(): Promise<Role[]> {
 }
 
 export async function fetchRole(roleId: string): Promise<Role> {
-  const response = await fetch(`${API_BASE}/roles/${roleId}`)
+  const response = await fetch(`${API_BASE}/roles/${roleId}`, fetchOptions)
   if (!response.ok) {
     throw new Error(`Failed to fetch role: ${roleId}`)
   }
@@ -30,10 +38,8 @@ export async function fetchRole(roleId: string): Promise<Role> {
 
 export async function createRole(role: Omit<Role, 'is_default'>): Promise<Role> {
   const response = await fetch(`${API_BASE}/roles`, {
+    ...fetchOptions,
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(role),
   })
   if (!response.ok) {
@@ -45,10 +51,8 @@ export async function createRole(role: Omit<Role, 'is_default'>): Promise<Role> 
 
 export async function updateRole(roleId: string, role: Partial<Role>): Promise<Role> {
   const response = await fetch(`${API_BASE}/roles/${roleId}`, {
+    ...fetchOptions,
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(role),
   })
   if (!response.ok) {
