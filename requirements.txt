@@ -1,0 +1,15 @@
+fastapi>=0.104.0
+uvicorn>=0.23.2
+pydantic>=2.4.2
+openai>=1.0.0
+python-dotenv>=1.0.0
+numpy>=1.25.2
+json5>=0.9.14
+starlette>=0.27.0
+asyncio>=3.4.3
+aiohttp>=3.8.5
+requests>=2.31.0
+python-multipart>=0.0.6
+# Optional dependencies
+redis>=4.6.0
+supabase>=2.0.0
