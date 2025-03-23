@@ -13,6 +13,10 @@ class Role(BaseModel):
     tone: str = Field("strategic", description="Communication tone (strategic, analytical, creative, etc.)")
     system_prompt: str = Field(..., description="Base system prompt for this role")
     is_default: bool = Field(False, description="Whether this is a default system role")
+    parent_role_id: Optional[str] = Field(None, description="ID of the parent role for inheritance")
+    inherit_memories: bool = Field(False, description="Whether to inherit memories from parent role")
+    memory_access_level: str = Field("standard", description="Memory access level (standard, elevated, admin)")
+    memory_categories: List[str] = Field(default_factory=list, description="Categories of memories this role specializes in")
 
 class RoleCreate(BaseModel):
     """Model for creating a new role"""
@@ -23,6 +27,10 @@ class RoleCreate(BaseModel):
     domains: List[str] = Field(default_factory=list, description="Areas of expertise")
     tone: str = Field("strategic", description="Communication tone (strategic, analytical, creative, etc.)")
     system_prompt: str = Field(..., description="Base system prompt for this role")
+    parent_role_id: Optional[str] = Field(None, description="ID of the parent role for inheritance")
+    inherit_memories: bool = Field(False, description="Whether to inherit memories from parent role")
+    memory_access_level: str = Field("standard", description="Memory access level (standard, elevated, admin)")
+    memory_categories: List[str] = Field(default_factory=list, description="Categories of memories this role specializes in")
 
 class RoleUpdate(BaseModel):
     """Model for updating an existing role"""
@@ -32,6 +40,10 @@ class RoleUpdate(BaseModel):
     domains: Optional[List[str]] = Field(None, description="Areas of expertise")
     tone: Optional[str] = Field(None, description="Communication tone (strategic, analytical, creative, etc.)")
     system_prompt: Optional[str] = Field(None, description="Base system prompt for this role")
+    parent_role_id: Optional[str] = Field(None, description="ID of the parent role for inheritance")
+    inherit_memories: Optional[bool] = Field(None, description="Whether to inherit memories from parent role")
+    memory_access_level: Optional[str] = Field(None, description="Memory access level (standard, elevated, admin)")
+    memory_categories: Optional[List[str]] = Field(None, description="Categories of memories this role specializes in")
 
 class RoleResponse(BaseModel):
     """Response model for role operations"""

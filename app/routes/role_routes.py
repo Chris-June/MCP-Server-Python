@@ -115,3 +115,127 @@ async def get_domains(role_service: RoleService = Depends(get_role_service)):
     for role in roles:
         all_domains.update(role.domains)
     return {"domains": sorted(list(all_domains))}
+
+@router.get("/{role_id}/inheritance-chain", response_model=RolesResponse, summary="Get the inheritance chain for a role")
+async def get_inheritance_chain(
+    role_id: str, 
+    role_service: RoleService = Depends(get_role_service)
+):
+    """Get the inheritance chain for a role
+    
+    Returns all roles in the inheritance chain, starting with the specified role
+    and following parent relationships.
+    """
+    # Get the memory service from the role service
+    memory_service = role_service.memory_service
+    
+    # Get the inheritance chain
+    roles = await memory_service.get_role_inheritance_chain(role_id, role_service)
+    
+    return RolesResponse(roles=roles)
+
+@router.get("/{role_id}/related-roles", response_model=RolesResponse, summary="Get roles related to a specific role")
+async def get_related_roles(
+    role_id: str, 
+    role_service: RoleService = Depends(get_role_service)
+):
+    """Get roles related to a specific role
+    
+    Returns roles that share memories with the specified role or have inheritance relationships.
+    """
+    # Get the memory service from the role service
+    memory_service = role_service.memory_service
+    
+    # Get related role IDs
+    related_role_ids = await memory_service.get_related_roles(role_id, role_service)
+    
+    # Get the actual role objects
+    related_roles = []
+    for related_id in related_role_ids:
+        role = await role_service.get_role(related_id)
+        if role:
+            related_roles.append(role)
+    
+    return RolesResponse(roles=related_roles)
+
+@router.patch("/{role_id}/memory-access", response_model=RoleResponse, summary="Update memory access settings for a role")
+async def update_memory_access(
+    role_id: str,
+    inherit_memories: Optional[bool] = None,
+    memory_access_level: Optional[str] = None,
+    memory_categories: Optional[List[str]] = Query(None),
+    role_service: RoleService = Depends(get_role_service)
+):
+    """Update memory access settings for a role
+    
+    Args:
+        role_id: ID of the role to update
+        inherit_memories: Whether the role should inherit memories from its parent
+        memory_access_level: Memory access level (standard, elevated, admin)
+        memory_categories: Categories of memories this role specializes in
+    """
+    # Create a partial update object with only the provided fields
+    update_data = {}
+    if inherit_memories is not None:
+        update_data["inherit_memories"] = inherit_memories
+    if memory_access_level is not None:
+        update_data["memory_access_level"] = memory_access_level
+    if memory_categories is not None:
+        update_data["memory_categories"] = memory_categories
+    
+    # Create a RoleUpdate object with the update data
+    role_update = RoleUpdate(**update_data)
+    
+    # Update the role
+    role = await role_service.update_role(role_id, role_update)
+    
+    return RoleResponse(role=role)
+
+@router.patch("/{role_id}/parent-role/{parent_id}", response_model=RoleResponse, summary="Set the parent role for inheritance")
+async def set_parent_role(
+    role_id: str,
+    parent_id: str,
+    role_service: RoleService = Depends(get_role_service)
+):
+    """Set the parent role for inheritance
+    
+    Args:
+        role_id: ID of the role to update
+        parent_id: ID of the parent role
+    """
+    # Check if the parent role exists
+    parent_role = await role_service.get_role(parent_id)
+    if not parent_role:
+        raise HTTPException(status_code=404, detail="Parent role not found")
+    
+    # Check for circular inheritance
+    memory_service = role_service.memory_service
+    inheritance_chain = await memory_service.get_role_inheritance_chain(parent_id, role_service)
+    if any(role.id == role_id for role in inheritance_chain):
+        raise HTTPException(status_code=400, detail="Circular inheritance detected")
+    
+    # Create a RoleUpdate object with the parent role ID
+    role_update = RoleUpdate(parent_role_id=parent_id)
+    
+    # Update the role
+    role = await role_service.update_role(role_id, role_update)
+    
+    return RoleResponse(role=role)
+
+@router.delete("/{role_id}/parent-role", response_model=RoleResponse, summary="Remove the parent role inheritance")
+async def remove_parent_role(
+    role_id: str,
+    role_service: RoleService = Depends(get_role_service)
+):
+    """Remove the parent role inheritance
+    
+    Args:
+        role_id: ID of the role to update
+    """
+    # Create a RoleUpdate object with null parent role ID
+    role_update = RoleUpdate(parent_role_id=None, inherit_memories=False)
+    
+    # Update the role
+    role = await role_service.update_role(role_id, role_update)
+    
+    return RoleResponse(role=role)

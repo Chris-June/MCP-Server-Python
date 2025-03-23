@@ -14,6 +14,7 @@ MCP (Model Context Protocol) is a sophisticated AI-powered server designed to pr
 - 📝 Enhanced markdown formatting for professional-looking content
 - 🖼️ Multi-modal context support for processing images and other media
 - 🔍 Advanced role search and filtering by keywords, domains, and tone
+- 🔗 Advanced memory features with tagging, sharing, and inheritance
 
 ## Technology Stack
 - **Backend**: Python with asyncio
@@ -52,6 +53,16 @@ EMBEDDING_MODEL=text-embedding-ada-002
 ```
 
 ## Recent Improvements
+
+### Advanced Memory Features
+- Implemented memory tagging and categorization system for better organization
+- Created hierarchical memory access control with role-based permissions
+- Designed role-based memory inheritance mechanism for knowledge sharing
+- Added configurable memory sharing permissions between roles
+- Developed semantic search for cross-role memory retrieval
+- Implemented memory embedding and similarity scoring for relevance ranking
+- Added API endpoints for memory sharing and inheritance management
+- Created comprehensive documentation for advanced memory features
 
 ### Role Search and Filtering
 - Implemented advanced search capabilities for finding roles by keywords
@@ -98,6 +109,7 @@ Detailed documentation is available in the `docs` directory:
 - `role_search_filtering.md`: Role search and filtering functionality
 - `role_editing.md`: Role management and editing features
 - `CONTEXT_SWITCHING.md`: Dynamic context switching between roles
+- `advanced_memory_features.md`: Advanced memory features including tagging, sharing, and inheritance
 
 ## Contributing
 Please read CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.
