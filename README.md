@@ -725,53 +725,85 @@ The Chat page provides an interactive interface for conversing with AI roles:
 
 ### Sample Conversations
 
-#### Financial Advisor Conversation
+#### CFO Advisor Conversation
 
-**User**: I'm 35 and want to start saving for retirement. What should I do?
+**User**: Our small business is growing rapidly, but our cash flow is becoming a problem. How should we manage this?
 
-**AI**: Great question! Starting to save for retirement at 35 is still plenty of time to build a solid nest egg. Here's a balanced approach to get you started:
+**AI**: This is a common challenge for growing businesses. Let me provide some strategic guidance on managing your cash flow:
 
-**First Steps:**
-* **Establish an emergency fund** of 3-6 months of expenses before focusing heavily on retirement
-* **Take advantage of employer matching** if your workplace offers a 401(k) match - this is essentially free money
+**Short-term Actions:**
+* **Implement cash flow forecasting** - Create a 13-week rolling forecast to anticipate cash gaps
+* **Optimize accounts receivable** - Consider offering early payment discounts and streamline your invoicing process
+* **Review payment terms** - Negotiate longer payment terms with suppliers while shortening terms for customers
 
-**Retirement Account Options:**
-* **401(k)/403(b)**: Try to contribute at least enough to get the full employer match
-* **Roth IRA**: Consider opening one if you're eligible - contributions grow tax-free
-* **Traditional IRA**: Another option with potential tax advantages now
+**Medium-term Strategies:**
+* **Evaluate inventory management** - Identify slow-moving inventory and optimize order quantities
+* **Consider financing options** - Explore lines of credit, invoice factoring, or equipment financing
+* **Implement KPI tracking** - Monitor cash conversion cycle, days sales outstanding, and inventory turnover
 
-**Investment Strategy:**
-* At 35, you can still have a relatively aggressive portfolio (e.g., 70-80% stocks, 20-30% bonds)
-* Consider low-cost index funds for diversification
+**Long-term Planning:**
+* **Develop a capital structure strategy** - Balance debt and equity to support growth while managing risk
+* **Consider strategic pricing reviews** - Ensure your pricing strategy supports healthy margins
 
-Would you like me to explain any of these options in more detail?
+Would you like me to elaborate on any of these strategies or discuss specific financing options for your situation?
 
-#### Technical Support Conversation
+#### CMO Advisor Conversation
 
-**User**: My laptop keeps freezing randomly. What could be wrong?
+**User**: We need to increase our market share but have a limited marketing budget. What approach would you recommend?
 
-**AI**: I'm sorry to hear about your laptop freezing issues! Let's figure this out together. 
+**AI**: I understand the challenge of maximizing market impact with budget constraints. Here's a strategic approach:
 
-**Possible Causes & Solutions:**
+**Market Analysis & Targeting:**
+1. **Customer Segmentation**
+   * Identify your most profitable customer segments
+   * Focus resources on high-potential segments with lower acquisition costs
+   * Develop detailed personas to guide messaging
 
-1. **Overheating**
-   * Check if your laptop feels hot when it freezes
-   * Ensure vents aren't blocked and consider using a cooling pad
-   * Clean dust from internal fans (if you're comfortable opening it or get professional help)
+2. **Competitive Positioning**
+   * Identify underserved niches where you can establish dominance
+   * Emphasize your unique value proposition in all communications
+   * Consider a blue ocean strategy to create uncontested market space
 
-2. **Resource-intensive applications**
-   * Check Task Manager (Ctrl+Shift+Esc) to see what's using resources
-   * Close unnecessary applications and browser tabs
+3. **Digital Marketing Optimization**
+   * Implement data-driven channel selection based on CAC and ROAS metrics
+   * Leverage marketing automation to improve efficiency
+   * Develop a content strategy focused on conversion, not just awareness
 
-3. **Outdated drivers or software**
-   * Update your operating system
-   * Update graphics and other device drivers
+4. **Strategic Partnerships**
+   * Identify complementary businesses for co-marketing opportunities
+   * Consider channel partnerships to extend reach without additional spend
 
-4. **Insufficient RAM or storage**
-   * Check available storage space (aim for at least 10% free)
-   * Consider upgrading RAM if your system is consistently using near 100%
+Would you like me to develop a more detailed plan for any of these areas or discuss specific digital marketing tactics that offer the best ROI for small businesses?
 
-Could you tell me a bit more about when the freezing happens? Does it occur during specific activities or at random times?
+#### CEO Advisor Conversation
+
+**User**: We're considering expanding into a new market. What strategic approach would you recommend for evaluating this opportunity?
+
+**AI**: Expanding into new markets is a significant decision that requires careful strategic analysis. Here's a structured approach I recommend:
+
+**Market Opportunity Assessment:**
+1. **Market Size & Growth Analysis**
+   * Evaluate the total addressable market (TAM) and serviceable obtainable market (SOM)
+   * Analyze historical growth rates and future projections
+   * Identify market trends and potential disruptors
+
+2. **Competitive Landscape**
+   * Map existing competitors and their market share
+   * Assess barriers to entry and potential competitive advantages
+   * Identify potential strategic partners or acquisition targets
+
+**Internal Capability Evaluation:**
+1. **Resource Requirements**
+   * Estimate capital investment needed for market entry
+   * Assess talent and operational capabilities required
+   * Evaluate technology and infrastructure needs
+
+2. **Risk Assessment**
+   * Identify regulatory and compliance considerations
+   * Evaluate potential impact on existing business operations
+   * Develop contingency plans for various scenarios
+
+Would you like me to help you develop a specific market entry strategy or discuss how to prioritize between multiple market opportunities?
 
 ## Advanced Configuration
 
