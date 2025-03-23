@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.config import settings
-from app.routes import role_routes, memory_routes, healthcheck, browser_routes, context_routes, multimodal_routes
+from app.routes import role_routes, memory_routes, healthcheck, browser_routes, context_routes, multimodal_routes, provider_routes
 from app.services.role_service import RoleService
 from app.services.memory_service import MemoryService
 from app.services.ai_processor import AIProcessor
@@ -72,6 +72,7 @@ app.include_router(memory_routes.router, prefix=settings.api_prefix, tags=["Memo
 app.include_router(browser_routes.router, prefix=settings.api_prefix + "/browser", tags=["Browser"])
 app.include_router(context_routes.router, prefix=settings.api_prefix, tags=["Context Switching"])
 app.include_router(multimodal_routes.router, prefix=settings.api_prefix, tags=["Multi-Modal"])
+app.include_router(provider_routes.router, prefix=settings.api_prefix + "/providers", tags=["LLM Providers"])
 
 # Root endpoint
 @app.get("/", tags=["Root"])

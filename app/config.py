@@ -6,10 +6,23 @@ class Settings(BaseSettings):
     """
     Application settings loaded from environment variables
     """
+    # LLM provider settings
+    default_provider: str = os.getenv("DEFAULT_PROVIDER", "openai")
+    
     # OpenAI settings
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
     openai_vision_model: str = os.getenv("OPENAI_VISION_MODEL", "gpt-4o")
+    
+    # Anthropic settings
+    anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
+    anthropic_model: str = os.getenv("ANTHROPIC_MODEL", "claude-3-haiku-20240307")
+    anthropic_vision_model: str = os.getenv("ANTHROPIC_VISION_MODEL", "claude-3-opus-20240229")
+    
+    # Google Gemini settings
+    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
+    gemini_vision_model: str = os.getenv("GEMINI_VISION_MODEL", "gemini-1.5-pro-vision")
     
     # Server settings
     app_name: str = "Small Business Executive Advisors"

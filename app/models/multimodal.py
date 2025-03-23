@@ -54,6 +54,7 @@ class MultiModalProcessRequest(BaseModel):
     role_id: str = Field(..., description="ID of the role to use")
     content: MultiModalContent = Field(..., description="Multi-modal content to process")
     custom_instructions: Optional[str] = Field(None, description="Optional custom instructions")
+    provider_name: Optional[str] = Field(None, description="Optional LLM provider to use (defaults to the configured default provider)")
     
     class Config:
         json_schema_extra = {
@@ -68,7 +69,8 @@ class MultiModalProcessRequest(BaseModel):
                         "alt_text": "Financial performance chart"
                     }]
                 },
-                "custom_instructions": "Focus on cash flow implications"
+                "custom_instructions": "Focus on cash flow implications",
+                "provider_name": "openai"
             }
         }
 

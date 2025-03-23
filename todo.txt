@@ -37,6 +37,8 @@
 - [✅] Implement streaming responses
 - [ ] Add rate limiting
 - [✅] Add multi-modal context support
+- [✅] Add support for multiple LLM providers (OpenAI, Anthropic, Google Gemini)
+- [✅] Update multi-modal processor to work with multiple providers
 - [ ] Develop client SDK for easier integration
 - [ ] Add unit and integration tests
 - [ ] Implement WebSocket support for bidirectional communication

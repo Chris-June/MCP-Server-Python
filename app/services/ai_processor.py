@@ -1,12 +1,13 @@
-from openai import AsyncOpenAI
 import asyncio
 import json
 from typing import List, Dict, Any, Optional, AsyncGenerator
 from app.config import settings
 from app.services.web_browser.browser_integration import BrowserIntegration
+from app.services.llm_providers.provider_factory import LLMProviderFactory
+from app.services.llm_providers.base_provider import BaseLLMProvider
 
 class AIProcessor:
-    """Service for processing AI requests using OpenAI API"""
+    """Service for processing AI requests using various LLM providers"""
     
     def __init__(self, browser_integration: Optional[BrowserIntegration] = None):
         """Initialize the AI processor
@@ -14,22 +15,63 @@ class AIProcessor:
         Args:
             browser_integration: Optional browser integration service
         """
-        self.client = AsyncOpenAI(api_key=settings.openai_api_key)
-        self.model = settings.openai_model
+        self.default_provider_name = settings.default_provider
         self.browser_integration = browser_integration
+        
+        # Initialize providers based on available API keys
+        self.providers = {}
+        
+        # Initialize OpenAI provider if API key is available
+        if settings.openai_api_key:
+            self.providers["openai"] = LLMProviderFactory.create_provider(
+                "openai", 
+                settings.openai_api_key, 
+                settings.openai_model
+            )
+        
+        # Initialize Anthropic provider if API key is available
+        if settings.anthropic_api_key:
+            self.providers["anthropic"] = LLMProviderFactory.create_provider(
+                "anthropic", 
+                settings.anthropic_api_key, 
+                settings.anthropic_model
+            )
+        
+        # Initialize Gemini provider if API key is available
+        if settings.gemini_api_key:
+            self.providers["gemini"] = LLMProviderFactory.create_provider(
+                "gemini", 
+                settings.gemini_api_key, 
+                settings.gemini_model
+            )
+        
+        # Ensure we have at least one provider available
+        if not self.providers:
+            raise ValueError("No LLM providers available. Please configure at least one provider API key.")
+        
+        # Use the default provider if available, otherwise use the first available provider
+        if self.default_provider_name in self.providers:
+            self.default_provider = self.providers[self.default_provider_name]
+        else:
+            self.default_provider_name = next(iter(self.providers.keys()))
+            self.default_provider = self.providers[self.default_provider_name]
     
-    async def generate_response(self, system_prompt: str, user_prompt: str, role_id: Optional[str] = None) -> str:
-        """Generate a response using the OpenAI API
+    async def generate_response(self, system_prompt: str, user_prompt: str, role_id: Optional[str] = None, provider_name: Optional[str] = None) -> str:
+        """Generate a response using the configured LLM provider
         
         Args:
             system_prompt: The system prompt to use
             user_prompt: The user prompt to use
             role_id: Optional role ID for browser integration
+            provider_name: Optional provider name to use (defaults to the default provider)
             
         Returns:
             The generated response
         """
         try:
+            # Get the provider to use
+            provider = self.get_provider(provider_name)
+            
             # Check if the user prompt contains a web browsing request
             web_result = None
             if self.browser_integration and role_id:
@@ -165,32 +207,22 @@ class AIProcessor:
                             form_info = f"\n\n[FORM_INTERACTION]\nFailed to parse form data: {str(e)}\n[/FORM_INTERACTION]"
                             user_prompt = user_prompt.replace(user_prompt[form_start:form_end+1], form_info)
             
-            response = await self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=0.7,
-                max_tokens=1000,
-                top_p=1.0,
-                frequency_penalty=0.0,
-                presence_penalty=0.0
-            )
-            
-            return response.choices[0].message.content.strip()
+            # Generate the response using the selected provider
+            provider = self.get_provider(provider_name)
+            return await provider.generate_completion(system_prompt, user_prompt)
         except Exception as e:
             # In a production environment, add proper error handling and logging
             print(f"Error generating response: {e}")
             return f"I'm sorry, I encountered an error: {str(e)}"
     
-    async def generate_response_stream(self, system_prompt: str, user_prompt: str, role_id: Optional[str] = None) -> AsyncGenerator[str, None]:
-        """Generate a streaming response using the OpenAI API
+    async def generate_response_stream(self, system_prompt: str, user_prompt: str, role_id: Optional[str] = None, provider_name: Optional[str] = None) -> AsyncGenerator[str, None]:
+        """Generate a streaming response using the configured LLM provider
         
         Args:
             system_prompt: The system prompt to use
             user_prompt: The user prompt to use
             role_id: Optional role ID for browser integration
+            provider_name: Optional provider name to use (defaults to the default provider)
             
         Yields:
             Chunks of the generated response
@@ -324,41 +356,35 @@ class AIProcessor:
                             form_info = f"\n\n[FORM_INTERACTION]\nFailed to parse form data: {str(e)}\n[/FORM_INTERACTION]"
                             user_prompt = user_prompt.replace(user_prompt[form_start:form_end+1], form_info)
             
-            stream = await self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=0.7,
-                max_tokens=1000,
-                top_p=1.0,
-                frequency_penalty=0.0,
-                presence_penalty=0.0,
-                stream=True
-            )
-            
-            async for chunk in stream:
-                if chunk.choices and len(chunk.choices) > 0:
-                    content = chunk.choices[0].delta.content
-                    if content is not None:
-                        yield content
+            # Generate the streaming response using the selected provider
+            provider = self.get_provider(provider_name)
+            async for chunk in provider.generate_completion_stream(system_prompt, user_prompt):
+                yield chunk
         except Exception as e:
             # In a production environment, add proper error handling and logging
             print(f"Error generating streaming response: {e}")
             yield f"I'm sorry, I encountered an error: {str(e)}"
     
-    async def create_embedding(self, text: str) -> List[float]:
+    async def create_embedding(self, text: str, provider_name: Optional[str] = None) -> List[float]:
         """Create an embedding vector for the given text
         
         Args:
             text: The text to embed
+            provider_name: Optional provider name to use (defaults to the default provider)
             
         Returns:
             The embedding vector
         """
         try:
-            response = await self.client.embeddings.create(
+            # Currently only OpenAI supports embeddings in our implementation
+            # In the future, other providers can be added with their own embedding methods
+            openai_provider = self.providers.get("openai")
+            if not openai_provider:
+                raise ValueError("OpenAI provider is required for embeddings")
+                
+            # Use the OpenAI client directly for embeddings
+            # This is a temporary solution until we implement embeddings in each provider
+            response = await openai_provider.client.embeddings.create(
                 model="text-embedding-ada-002",
                 input=text
             )
@@ -368,3 +394,58 @@ class AIProcessor:
             # In a production environment, add proper error handling and logging
             print(f"Error creating embedding: {e}")
             return []
+    
+    def _extract_json_from_response(self, response_text: str) -> Dict[str, Any]:
+        """Extract JSON from a response text
+        
+        Args:
+            response_text: The response text containing JSON
+            
+        Returns:
+            The extracted JSON as a dictionary
+        """
+        try:
+            # Find JSON in the response
+            json_start = response_text.find('{')
+            json_end = response_text.rfind('}')
+            
+            if json_start >= 0 and json_end > json_start:
+                json_str = response_text[json_start:json_end+1]
+                return json.loads(json_str)
+            else:
+                return {}
+        except Exception as e:
+            print(f"Error extracting JSON: {str(e)}")
+            return {}
+    
+    def get_provider(self, provider_name: Optional[str] = None) -> BaseLLMProvider:
+        """Get a provider by name
+        
+        Args:
+            provider_name: Name of the provider to get (defaults to the default provider)
+            
+        Returns:
+            The requested provider
+            
+        Raises:
+            ValueError: If the provider is not available
+        """
+        # Use the default provider if none specified
+        if not provider_name:
+            return self.default_provider
+        
+        # Get the requested provider
+        provider = self.providers.get(provider_name.lower())
+        if not provider:
+            available = ", ".join(self.providers.keys())
+            raise ValueError(f"Provider '{provider_name}' not available. Available providers: {available}")
+        
+        return provider
+    
+    def get_available_providers(self) -> Dict[str, str]:
+        """Get all available providers
+        
+        Returns:
+            Dictionary of provider names to model names
+        """
+        return {name: provider.default_model for name, provider in self.providers.items()}

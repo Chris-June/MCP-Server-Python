@@ -1,7 +1,7 @@
 # MCP (Model Context Protocol) Server: Intelligent Conversational Platform
 
 ## Overview
-MCP (Model Context Protocol) is a sophisticated AI-powered server designed to provide intelligent, context-aware conversational capabilities. This standalone server leverages OpenAI's GPT-4o-mini model, FastAPI, and Pyppeteer for web browsing capabilities to deliver nuanced, contextually relevant responses across various business domains.
+MCP (Model Context Protocol) is a sophisticated AI-powered server designed to provide intelligent, context-aware conversational capabilities. This standalone server leverages multiple LLM providers (OpenAI, Anthropic, and Google Gemini), FastAPI, and Pyppeteer for web browsing capabilities to deliver nuanced, contextually relevant responses across various business domains.
 
 **Note:** This repository contains only the MCP server implementation. While frontend examples are provided in the documentation for illustrative purposes, the actual frontend implementation is not included in this repository. The MCP server is designed to be integrated with any frontend through its RESTful API.
 
@@ -15,11 +15,15 @@ MCP (Model Context Protocol) is a sophisticated AI-powered server designed to pr
 - 🖼️ Multi-modal context support for processing images and other media
 - 🔍 Advanced role search and filtering by keywords, domains, and tone
 - 🔗 Advanced memory features with tagging, sharing, and inheritance
+- 🔄 Multiple LLM provider support (OpenAI, Anthropic, Google Gemini)
 
 ## Technology Stack
 - **Backend**: Python with asyncio
 - **Web Framework**: FastAPI
-- **AI Model**: OpenAI GPT-4o-mini
+- **AI Models**: 
+  - OpenAI GPT-4o-mini
+  - Anthropic Claude models
+  - Google Gemini models
 - **Browser Automation**: Pyppeteer (Python port of Puppeteer)
 - **API Documentation**: Swagger UI via FastAPI
 
@@ -46,9 +50,21 @@ MCP (Model Context Protocol) is a sophisticated AI-powered server designed to pr
 Create a `.env` file based on `.env.example` with the following variables:
 
 ```
+# OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_MODEL=gpt-4o-mini
 OPENAI_VISION_MODEL=gpt-4o
+
+# Anthropic Configuration (Optional)
+ANTHROPIC_API_KEY=your_anthropic_api_key
+ANTHROPIC_MODEL=claude-3-haiku-20240307
+
+# Google Gemini Configuration (Optional)
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-1.5-pro
+
+# Default Provider Configuration
+DEFAULT_PROVIDER=openai  # Options: openai, anthropic, gemini
 EMBEDDING_MODEL=text-embedding-ada-002
 ```
 
@@ -77,8 +93,18 @@ EMBEDDING_MODEL=text-embedding-ada-002
 - Implemented dedicated multi-modal processing service
 - Created API endpoints for multi-modal content processing
 - Added file upload capabilities for media content
-- Integrated with OpenAI's vision-capable models
+- Integrated with vision-capable models across providers
 - Added streaming support for multi-modal responses
+
+### Multiple LLM Provider Support
+- Implemented support for multiple LLM providers (OpenAI, Anthropic, Google Gemini)
+- Created a modular provider architecture with a common interface
+- Added provider-specific optimizations for each LLM service
+- Implemented provider selection for all API endpoints
+- Created dedicated provider routes for direct provider access
+- Added fallback mechanisms for multi-modal content when primary provider lacks capabilities
+- Implemented provider discovery endpoint to list available providers
+- Updated configuration to support provider-specific settings
 
 ### Enhanced Formatting
 - Added explicit formatting instructions to all prompts

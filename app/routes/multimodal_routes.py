@@ -34,7 +34,8 @@ async def process_multimodal_content(
     # Process the multi-modal content
     response_text = await multimodal_processor.process_multimodal_content(
         system_prompt,
-        request.content
+        request.content,
+        request.provider_name
     )
     
     # Prepare information about processed media
@@ -58,6 +59,7 @@ async def generate_multimodal_stream_response(
     role_id: str,
     content: MultiModalContent,
     custom_instructions: Optional[str],
+    provider_name: Optional[str],
     multimodal_processor: MultiModalProcessor,
     role_service: RoleService
 ) -> AsyncGenerator[str, None]:
@@ -71,7 +73,7 @@ async def generate_multimodal_stream_response(
         system_prompt += f"\n\nAdditional Instructions: {custom_instructions}"
     
     # Process the multi-modal content with streaming
-    async for chunk in multimodal_processor.process_multimodal_content_stream(system_prompt, content):
+    async for chunk in multimodal_processor.process_multimodal_content_stream(system_prompt, content, provider_name):
         yield f"data: {chunk}\n\n"
     yield "data: [DONE]\n\n"
 
@@ -87,6 +89,7 @@ async def process_multimodal_content_stream(
             request.role_id,
             request.content,
             request.custom_instructions,
+            request.provider_name,
             multimodal_processor,
             role_service
         ),
@@ -119,15 +122,27 @@ async def upload_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
 
+@router.get("/providers", summary="Get available LLM providers for multi-modal processing")
+async def get_available_providers(
+    multimodal_processor: MultiModalProcessor = Depends(get_multimodal_processor)
+):
+    """Get available LLM providers for multi-modal processing"""
+    try:
+        providers = multimodal_processor.get_available_providers()
+        return {"providers": providers, "default_provider": multimodal_processor.default_provider_name}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving providers: {str(e)}")
+
 @router.post("/analyze/image", summary="Analyze an image with a specific prompt")
 async def analyze_image(
     image_url: str = Form(...),
     prompt: str = Form(...),
+    provider_name: Optional[str] = Form(None),
     multimodal_processor: MultiModalProcessor = Depends(get_multimodal_processor)
 ):
     """Analyze an image with a specific prompt"""
     try:
-        result = await multimodal_processor.analyze_image(image_url, prompt)
+        result = await multimodal_processor.analyze_image(image_url, prompt, provider_name)
         return {"analysis": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error analyzing image: {str(e)}")
