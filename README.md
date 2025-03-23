@@ -388,6 +388,46 @@ The MCP Server provides a comprehensive API for managing roles, memories, and pr
 #### Query Processing
 
 - `POST /api/v1/roles/process` - Process a query with role-specific context
+- `POST /api/v1/roles/process-stream` - Process a query with streaming response
+
+#### Domain Analysis
+
+- `GET /api/v1/domain-analysis/domains` - Get all available domain templates
+- `GET /api/v1/domain-analysis/domains/{domain}` - Get a specific domain template
+- `POST /api/v1/domain-analysis/analyze` - Analyze content based on role domains
+
+#### Multi-Modal Processing
+
+- `POST /api/v1/multimodal/process` - Process multi-modal content (text + images)
+- `POST /api/v1/multimodal/process-stream` - Process multi-modal content with streaming response
+
+#### LLM Provider Management
+
+- `GET /api/v1/providers` - List all available LLM providers
+- `GET /api/v1/providers/{provider_id}` - Get details for a specific provider
+- `POST /api/v1/providers/{provider_id}/process` - Process a query with a specific provider
+
+#### Context Switching
+
+- `POST /api/v1/context/session` - Create a new context switching session
+- `POST /api/v1/context/process` - Process a query with context switching
+- `POST /api/v1/context/process-stream` - Process a query with context switching and streaming response
+- `POST /api/v1/context/switch` - Manually switch context to a different role
+- `GET /api/v1/context/sessions/{session_id}` - Get information about a session
+- `GET /api/v1/context/sessions/{session_id}/history` - Get context switch history for a session
+- `DELETE /api/v1/context/sessions/{session_id}` - Close a session
+
+#### Web Browser
+
+- `POST /api/v1/browser/sessions` - Create a new browser session
+- `DELETE /api/v1/browser/sessions/{session_id}` - Close a browser session
+- `POST /api/v1/browser/sessions/{session_id}/navigate` - Navigate to a URL
+- `GET /api/v1/browser/sessions/{session_id}/content` - Get the current page content
+- `POST /api/v1/browser/sessions/{session_id}/screenshot` - Take a screenshot of the page
+- `POST /api/v1/browser/sessions/{session_id}/click` - Click an element on the page
+- `POST /api/v1/browser/sessions/{session_id}/fill` - Fill out an input field
+- `POST /api/v1/browser/sessions/{session_id}/evaluate` - Execute JavaScript in the browser
+- `GET /api/v1/browser/sessions/{session_id}/history` - Get browsing history
 
 ## Core Concepts
 
