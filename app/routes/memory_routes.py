@@ -15,7 +15,7 @@ async def get_ai_processor(request: Request) -> AIProcessor:
     return request.app.state.ai_processor
 
 # Define additional response models for new endpoints
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class SemanticSearchRequest(BaseModel):
     """Request model for semantic memory search"""
