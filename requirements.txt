@@ -1,3 +1,4 @@
+# Core dependencies
 fastapi>=0.104.0
 uvicorn>=0.23.2
 pydantic>=2.4.2
@@ -10,8 +11,9 @@ asyncio>=3.4.3
 aiohttp>=3.8.5
 requests>=2.31.0
 python-multipart>=0.0.6
-pyppeteer==2.0.0
 
+# Web browser dependencies
+pyppeteer==2.0.0
 
 # Optional dependencies
 redis>=4.6.0

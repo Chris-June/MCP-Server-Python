@@ -199,8 +199,23 @@ class RoleService:
             role_id, query, embedding, limit=5
         )
         
+        # Check for context switching markers in the custom instructions
+        context_switch_info = None
+        if custom_instructions and "You are switching from the role of" in custom_instructions:
+            # Extract context switch information from custom instructions
+            parts = custom_instructions.split("\n\n", 1)
+            context_switch_info = parts[0]
+            if len(parts) > 1:
+                custom_instructions = parts[1]
+            else:
+                custom_instructions = None
+        
         # Generate the system prompt
         system_prompt = await self.generate_complete_prompt(role_id, custom_instructions)
+        
+        # Add context switching information if present
+        if context_switch_info:
+            system_prompt = f"{context_switch_info}\n\n{system_prompt}"
         
         # Add relevant memories to the prompt
         if relevant_memories:
@@ -242,8 +257,23 @@ class RoleService:
             role_id, query, embedding, limit=5
         )
         
+        # Check for context switching markers in the custom instructions
+        context_switch_info = None
+        if custom_instructions and "You are switching from the role of" in custom_instructions:
+            # Extract context switch information from custom instructions
+            parts = custom_instructions.split("\n\n", 1)
+            context_switch_info = parts[0]
+            if len(parts) > 1:
+                custom_instructions = parts[1]
+            else:
+                custom_instructions = None
+        
         # Generate the system prompt
         system_prompt = await self.generate_complete_prompt(role_id, custom_instructions)
+        
+        # Add context switching information if present
+        if context_switch_info:
+            system_prompt = f"{context_switch_info}\n\n{system_prompt}"
         
         # Add relevant memories to the prompt
         if relevant_memories:

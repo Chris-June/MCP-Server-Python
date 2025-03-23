@@ -1,40 +1,90 @@
 # MCP (Model Context Protocol) Server: Intelligent Conversational Platform
 
 ## Overview
-MCP (Model Context Protocol) is a sophisticated AI-powered server designed to provide intelligent, context-aware conversational capabilities. This standalone server leverages advanced language models and intelligent routing to deliver nuanced, contextually relevant responses.
+MCP (Model Context Protocol) is a sophisticated AI-powered server designed to provide intelligent, context-aware conversational capabilities. This standalone server leverages OpenAI's GPT-4o-mini model, FastAPI, and Pyppeteer for web browsing capabilities to deliver nuanced, contextually relevant responses across various business domains.
+
+**Note:** This repository contains only the MCP server implementation. While frontend examples are provided in the documentation for illustrative purposes, the actual frontend implementation is not included in this repository. The MCP server is designed to be integrated with any frontend through its RESTful API.
 
 ## Key Features
-- 🤖 Advanced AI-driven conversation management
-- 🔒 Secure API integration
-- 📊 Contextual analysis and response generation
-- 🌐 Flexible, modular architecture
+- 🤖 Role-based AI advisor system with customizable instructions and tones
+- 🧠 Semantic memory management with vector similarity search
+- 🌊 Real-time streaming responses for improved user experience
+- 🌐 Integrated web browsing capabilities for AI-assisted research
+- 🔄 Dynamic context switching based on conversation triggers
+- 📝 Enhanced markdown formatting for professional-looking content
+- 🖼️ Multi-modal context support for processing images and other media
 
 ## Technology Stack
-- **Backend**: Python
-- **Server**: FastAPI/Express
-- **AI Model**: GPT-4o-mini
-- **Deployment**: Docker-ready
+- **Backend**: Python with asyncio
+- **Web Framework**: FastAPI
+- **AI Model**: OpenAI GPT-4o-mini
+- **Browser Automation**: Pyppeteer (Python port of Puppeteer)
+- **API Documentation**: Swagger UI via FastAPI
 
 ## Setup and Installation
 
 ### Prerequisites
 - Python 3.9+
-- pip
-- (Optional) Docker
+- Node.js 18+ and npm
+- OpenAI API key
+- Git (for cloning the repository)
 
 ### Installation Steps
 1. Clone the repository
-2. Create a virtual environment
-3. Install dependencies: `pip install -r requirements.txt`
-4. Configure environment variables
-5. Run the server
+2. Create a virtual environment: `python -m venv venv`
+3. Activate the virtual environment: 
+   - Windows: `venv\Scripts\activate`
+   - macOS/Linux: `source venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
+5. Configure environment variables (see below)
+6. Run the server: `python -m app.main`
+7. Access the API documentation at `http://localhost:8000/docs`
 
 ## Configuration
-Refer to `.env.example` for required environment variables.
+Create a `.env` file based on `.env.example` with the following variables:
+
+```
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_VISION_MODEL=gpt-4o
+EMBEDDING_MODEL=text-embedding-ada-002
+```
+
+## Recent Improvements
+
+### Multi-Modal Context Support
+- Added support for processing images alongside text queries
+- Implemented dedicated multi-modal processing service
+- Created API endpoints for multi-modal content processing
+- Added file upload capabilities for media content
+- Integrated with OpenAI's vision-capable models
+- Added streaming support for multi-modal responses
+
+### Enhanced Formatting
+- Added explicit formatting instructions to all prompts
+- Standardized markdown formatting across different content types
+- Improved client-side rendering of formatted content
+- Enhanced CSS styling for better readability
+
+### Streaming Functionality
+- Implemented real-time streaming of AI responses
+- Added visual indicators for streaming state
+- Fixed string literal issues in SSE handling
+- Improved UI to show different loading states
 
 ## Development
-- Use `requirements.txt` for dependency management
-- Utilize `Dockerfile` for containerized deployment
+- Use `requirements.txt` for server dependency management
+- Use `package.json` for client dependencies
+- Update `todo.txt` with new features and improvements after each iteration
+- Update README.md after each new feature implementation
+
+## Documentation
+Detailed documentation is available in the `docs` directory:
+- `ROUTES.md`: API endpoints and their functionality
+- `MODELS.md`: Data structures and schemas
+- `ARCHITECTURE.md`: System design and component interactions
+- `SERVICES.md`: Core business logic implementation
+- `SERVER_CAPABILITIES.md`: Features and capabilities
 
 ## Contributing
 Please read CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.
@@ -127,6 +177,7 @@ This platform allows you to:
 - **Advisor Insights**: View and manage business insights from different executive advisors
 - **Business Goals**: Set and track progress towards important business milestones
 - **Web Browsing Capability**: Integrated web browser for AI-assisted research and information gathering
+- **Multi-Modal Analysis**: Process and analyze images alongside text for richer context
 
 ## Architecture
 
@@ -422,6 +473,54 @@ GET /api/v1/browser/sessions/{session_id}/history - Get browsing history
 ```
 
 For more detailed information, refer to the [Web Browsing Documentation](docs/web_browsing.md).
+
+### Context Switching
+
+The context switching feature allows the AI to dynamically adapt to different roles based on the content of user queries, providing a more natural and seamless conversation experience.
+
+#### How It Works
+
+1. **Trigger Detection**: The system analyzes user queries for specific patterns that indicate a particular domain or expertise would be more appropriate.
+2. **Role Matching**: Based on detected triggers, the system determines the best role to handle the query.
+3. **Context Transition**: When switching roles, the system provides context about the transition to maintain conversation coherence.
+4. **Session Management**: The system maintains session history across role transitions for a continuous experience.
+
+#### Key Components
+
+- **TriggerService**: Detects triggers in user queries and determines the most appropriate role
+- **ContextSwitchingService**: Manages sessions and handles the process of switching between roles
+- **Domain-specific Trigger Patterns**: Pre-configured patterns for common domains like finance, technology, healthcare, etc.
+
+#### API Endpoints
+
+The following API endpoints are available for context switching:
+
+- **POST /api/context/sessions** - Create a new session with an initial role
+- **GET /api/context/sessions/{session_id}** - Get session information
+- **DELETE /api/context/sessions/{session_id}** - Close a session
+- **POST /api/context/process** - Process a query with context switching
+- **POST /api/context/process/stream** - Process a query with context switching and streaming response
+- **POST /api/context/switch** - Manually switch context to a different role
+- **GET /api/context/sessions/{session_id}/history** - Get context switch history
+
+#### Example Use Case
+
+Imagine a conversation that starts with technical questions but then shifts to financial considerations:
+
+1. User asks about software implementation (handled by Technical Support role)
+2. User then asks about cost implications (system detects financial triggers)
+3. System automatically switches to Financial Advisor role
+4. AI responds with financial expertise while maintaining conversation context
+5. User receives seamless expertise across domains without manually switching roles
+
+#### Benefits
+
+- **Natural Conversations**: Users can freely change topics without explicitly switching roles
+- **Specialized Expertise**: Each query is handled by the most appropriate role
+- **Contextual Continuity**: Conversation history is maintained across role transitions
+- **Improved User Experience**: Reduces friction in multi-domain conversations
+
+For more detailed information, refer to the [Context Switching Documentation](docs/CONTEXT_SWITCHING.md).
 
 ### Query Processing
 

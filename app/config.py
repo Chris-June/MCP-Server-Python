@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # OpenAI settings
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    openai_vision_model: str = os.getenv("OPENAI_VISION_MODEL", "gpt-4o")
     
     # Server settings
     app_name: str = "Small Business Executive Advisors"

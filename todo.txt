@@ -33,19 +33,28 @@
 ## Upcoming Features
 - [ ] Add authentication (JWT with Supabase Auth)
 - [ ] Implement vector database integration (ChromaDB, Supabase??)
-- [ ] Add real-time context switching based on triggers
+- [✅] Add real-time context switching based on triggers
 - [✅] Implement streaming responses
 - [ ] Add rate limiting
-- [ ] Add multi-modal context support
+- [✅] Add multi-modal context support
 - [ ] Develop client SDK for easier integration
 - [ ] Add unit and integration tests
 - [ ] Implement WebSocket support for bidirectional communication
 - [✅] Create frontend demo with React
-- [ ] Add role editing functionality
-- [ ] Implement role search and filtering
+- [✅] Add role editing functionality
+- [] Implement role search and filtering
 - [ ] Add role templates for quick creation
 - [ ] Implement role versioning and history
 - [ ] Add support for LangGraph agents and RAG pipelines
+
+## Multi-Modal Features
+- [ ] Add audio processing and transcription
+- [ ] Implement video content analysis
+- [ ] Add document parsing and analysis
+- [ ] Support multi-turn conversations with mixed media
+- [ ] Add media generation capabilities
+- [ ] Implement caching for frequently accessed media
+- [ ] Add support for batch processing of multiple media items
 
 ## Advanced Memory Features
 - [ ] Implement shared memory collection across AI agents
@@ -73,11 +82,13 @@
 - [ ] Add support for more LLM providers
 - [ ] Implement database persistence for roles and memories
 - [ ] Add support for role-based access control
-- [ ] Improve AI-generated content formatting with standardized markdown
-- [ ] Enhance markdown parsing in client components
-- [ ] Add CSS styling for formatted AI content
-- [ ] Implement secure API key management via environment variables
+- [✅] Improve AI-generated content formatting with standardized markdown
+- [✅] Enhance markdown parsing in client components
+- [✅] Add CSS styling for formatted AI content
+- [✅] Implement secure API key management via environment variables
 - [ ] Add contextual analysis capabilities for specialized domains
-- [ ] Optimize prompt management with centralized prompt templates
+- [✅] Optimize prompt management with centralized prompt templates
 - [ ] Test browser functionality more thoroughly with different websites and interaction patterns
 - [ ] Improve error handling for edge cases in the browser service (e.g., timeouts, navigation errors, element not found)
+- [✅] Fix streaming functionality with proper SSE handling
+- [✅] Add UI indicators for streaming state
