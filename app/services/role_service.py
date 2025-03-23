@@ -5,6 +5,7 @@ from app.models.role import Role, RoleCreate, RoleUpdate
 from app.models.memory import Memory, MemoryCreate
 from app.services.memory_service import MemoryService
 from app.services.ai_processor import AIProcessor
+from app.services.domain_analysis_service import DomainAnalysisService
 from app.config import DEFAULT_ROLES, TONE_PROFILES
 
 class RoleService:
@@ -19,6 +20,7 @@ class RoleService:
         """
         self.memory_service = memory_service
         self.ai_processor = ai_processor
+        self.domain_analysis_service = DomainAnalysisService()
         
         # In-memory storage for roles
         # For production, this would be replaced with a proper database
@@ -218,6 +220,9 @@ class RoleService:
         Returns:
             The processed response
         """
+        # Get the role
+        role = await self.get_role(role_id)
+        
         # Generate query embedding for memory retrieval
         embedding = await self.ai_processor.create_embedding(query)
         
@@ -248,6 +253,9 @@ class RoleService:
         if relevant_memories:
             memory_text = "\n\n".join([f"Memory: {memory.content}" for memory in relevant_memories])
             system_prompt += f"\n\nRelevant memories for this query:\n{memory_text}"
+            
+        # Enhance prompt with domain-specific analysis
+        system_prompt = self.domain_analysis_service.enhance_prompt_with_domain_analysis(system_prompt, query, role)
         
         # Generate the response
         response = await self.ai_processor.generate_response(system_prompt, query, role_id=role_id)
@@ -276,6 +284,9 @@ class RoleService:
         Yields:
             Chunks of the processed response
         """
+        # Get the role
+        role = await self.get_role(role_id)
+        
         # Generate query embedding for memory retrieval
         embedding = await self.ai_processor.create_embedding(query)
         
@@ -299,6 +310,9 @@ class RoleService:
         system_prompt = await self.generate_complete_prompt(role_id, custom_instructions)
         
         # Add context switching information if present
+        
+        # Enhance prompt with domain-specific analysis
+        system_prompt = self.domain_analysis_service.enhance_prompt_with_domain_analysis(system_prompt, query, role)
         if context_switch_info:
             system_prompt = f"{context_switch_info}\n\n{system_prompt}"
         
