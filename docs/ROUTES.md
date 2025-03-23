@@ -15,7 +15,7 @@ Routes in the MCP Server define the API endpoints that enable intelligent, conte
 - **`GET /api/context/sessions/{session_id}/history`**: Get context switch history
 
 ### 2. Role Management
-- **`GET /roles`**: Get all available roles
+- **`GET /roles`**: Get all available roles with optional filtering (search, domains, tone)
 - **`GET /roles/{role_id}`**: Get a specific role by ID
 - **`POST /roles`**: Create a new custom role
 - **`PATCH /roles/{role_id}`**: Update an existing role
@@ -23,6 +23,8 @@ Routes in the MCP Server define the API endpoints that enable intelligent, conte
 - **`POST /roles/process`**: Process a query using a specific role
 - **`POST /roles/process/stream`**: Process a query with streaming response
 - **`GET /roles/tones`**: Get all available tone profiles
+- **`GET /roles/search`**: Search for roles by query text with optional filtering
+- **`GET /roles/domains`**: Get all unique domains used across all roles
 
 ### 2. Memory Management
 - **`POST /memories`**: Store a memory for a specific role
@@ -58,6 +60,8 @@ Routes in the MCP Server define the API endpoints that enable intelligent, conte
 - **Automatic Context Switching**: Dynamic role selection based on query content
 - **Session-based Conversations**: Maintaining conversation state across context switches
 - **Context Transition Notifications**: Real-time notifications of role transitions
+- **Role Search and Filtering**: Advanced search capabilities for finding roles by keywords, domains, and tone
+- **Multi-Modal Processing**: Support for processing images alongside text queries
 
 ## Security Considerations
 - **Input Validation**: Pydantic models for request validation
@@ -65,7 +69,9 @@ Routes in the MCP Server define the API endpoints that enable intelligent, conte
 - **API Key Management**: Secure OpenAI API key handling via environment variables
 - **Future Plans**: JWT-based authentication and role-based access control
 
-## Example Route Handler
+## Example Route Handlers
+
+### Process Query
 ```python
 @router.post("/roles/process", response_model=ProcessResponse, summary="Process a query using a specific role")
 async def process_query(request: ProcessRequest, role_service: RoleService = Depends(get_role_service)):
@@ -81,6 +87,20 @@ async def process_query(request: ProcessRequest, role_service: RoleService = Dep
         query=request.query,
         response=response
     )
+```
+
+### Search Roles
+```python
+@router.get("/roles/search", response_model=RolesResponse, summary="Search for roles")
+async def search_roles(
+    query: str,
+    domains: Optional[List[str]] = Query(None),
+    tone: Optional[str] = None,
+    role_service: RoleService = Depends(get_role_service)
+):
+    """Search for roles based on query text, domains, and tone"""
+    roles = await role_service.get_roles(search_query=query, domains=domains, tone=tone)
+    return RolesResponse(roles=roles)
 ```
 
 ## Future Enhancements

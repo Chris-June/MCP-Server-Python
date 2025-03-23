@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, HTTPException, Response
+from fastapi import APIRouter, Depends, Request, HTTPException, Response, Query
 from typing import List, Optional, AsyncGenerator
 from fastapi.responses import StreamingResponse
 from app.models.role import Role, RoleCreate, RoleUpdate, RoleResponse, RolesResponse, ProcessRequest, ProcessResponse
@@ -11,10 +11,20 @@ async def get_role_service(request: Request) -> RoleService:
     """Dependency for getting the role service"""
     return request.app.state.role_service
 
-@router.get("", response_model=RolesResponse, summary="Get all available roles")
-async def get_roles(role_service: RoleService = Depends(get_role_service)):
-    """Get all available roles"""
-    roles = await role_service.get_roles()
+@router.get("", response_model=RolesResponse, summary="Get all available roles with optional filtering")
+async def get_roles(
+    search: Optional[str] = None,
+    domains: Optional[List[str]] = Query(None),
+    tone: Optional[str] = None,
+    role_service: RoleService = Depends(get_role_service)
+):
+    """Get all available roles with optional filtering
+    
+    - **search**: Optional text to search in name, description, and instructions
+    - **domains**: Optional list of domains to filter by
+    - **tone**: Optional tone to filter by
+    """
+    roles = await role_service.get_roles(search_query=search, domains=domains, tone=tone)
     return RolesResponse(roles=roles)
 
 @router.get("/{role_id}", response_model=RoleResponse, summary="Get a specific role by ID")
@@ -79,3 +89,29 @@ async def process_query_stream(request: ProcessRequest, role_service: RoleServic
 async def get_tones():
     """Get all available tone profiles"""
     return {"tones": TONE_PROFILES}
+
+@router.get("/search", response_model=RolesResponse, summary="Search for roles")
+async def search_roles(
+    query: str,
+    domains: Optional[List[str]] = Query(None),
+    tone: Optional[str] = None,
+    role_service: RoleService = Depends(get_role_service)
+):
+    """Search for roles based on query text, domains, and tone
+    
+    - **query**: Text to search in name, description, and instructions
+    - **domains**: Optional list of domains to filter by
+    - **tone**: Optional tone to filter by
+    """
+    roles = await role_service.get_roles(search_query=query, domains=domains, tone=tone)
+    return RolesResponse(roles=roles)
+
+@router.get("/domains", summary="Get all unique domains across roles")
+async def get_domains(role_service: RoleService = Depends(get_role_service)):
+    """Get all unique domains used across all roles"""
+    roles = await role_service.get_roles()
+    # Extract all domains from all roles and create a unique set
+    all_domains = set()
+    for role in roles:
+        all_domains.update(role.domains)
+    return {"domains": sorted(list(all_domains))}

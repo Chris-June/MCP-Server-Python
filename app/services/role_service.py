@@ -29,13 +29,40 @@ class RoleService:
             role = Role(**role_data)
             self.roles[role.id] = role
     
-    async def get_roles(self) -> List[Role]:
-        """Get all available roles
+    async def get_roles(self, search_query: Optional[str] = None, domains: Optional[List[str]] = None, tone: Optional[str] = None) -> List[Role]:
+        """Get all available roles with optional filtering
         
+        Args:
+            search_query: Optional text to search in name, description, and instructions
+            domains: Optional list of domains to filter by
+            tone: Optional tone to filter by
+            
         Returns:
-            List of roles
+            List of filtered roles
         """
-        return list(self.roles.values())
+        roles = list(self.roles.values())
+        
+        # Apply filters if provided
+        if search_query:
+            search_query = search_query.lower()
+            roles = [
+                role for role in roles if (
+                    search_query in role.name.lower() or
+                    search_query in role.description.lower() or
+                    search_query in role.instructions.lower()
+                )
+            ]
+        
+        if domains:
+            # Filter roles that have at least one of the specified domains
+            roles = [
+                role for role in roles if any(domain in role.domains for domain in domains)
+            ]
+        
+        if tone:
+            roles = [role for role in roles if role.tone == tone]
+        
+        return roles
     
     async def get_role(self, role_id: str) -> Role:
         """Get a specific role by ID

@@ -20,6 +20,9 @@ Services in the MCP Server implement the core business logic, AI interactions, a
 
 ### 2. Role Service
 - **RoleService**: Manages role creation, retrieval, updating, and deletion
+- Implements advanced search and filtering capabilities for roles
+- Supports text-based search across name, description, and instructions
+- Enables domain-based and tone-based filtering for specialized role discovery
 - Processes queries using specific roles
 - Generates complete system prompts with role instructions, tone, and relevant memories
 - Supports streaming responses for real-time interactions
@@ -58,6 +61,13 @@ Services in the MCP Server implement the core business logic, AI interactions, a
 
 ## Advanced Capabilities
 
+### Role Management
+- **Advanced Search**: Text-based search across role attributes (name, description, instructions)
+- **Domain Filtering**: Find roles with specific expertise domains
+- **Tone Filtering**: Filter roles by communication style preference
+- **Combined Filtering**: Apply multiple filters simultaneously for precise results
+- **Domain Discovery**: Retrieve all unique domains used across all roles
+
 ### AI Processing
 - **Context-Aware Responses**: Generates responses based on role, instructions, and relevant memories
 - **Vector Similarity Search**: Finds memories relevant to the current query using embeddings
@@ -78,7 +88,9 @@ Services in the MCP Server implement the core business logic, AI interactions, a
 - **JavaScript Execution**: Run custom scripts for advanced web interactions
 - **Form Filling**: Automated form filling for web interactions
 
-## Example Service Implementation
+## Example Service Implementations
+
+### Query Processing
 ```python
 async def process_query(self, role_id: str, query: str, custom_instructions: Optional[str] = None) -> str:
     """Process a query using a specific role
@@ -124,6 +136,44 @@ async def process_query(self, role_id: str, query: str, custom_instructions: Opt
     )
     
     return response
+```
+
+### Role Search and Filtering
+```python
+async def get_roles(self, search_query: Optional[str] = None, domains: Optional[List[str]] = None, tone: Optional[str] = None) -> List[Role]:
+    """Get all available roles with optional filtering
+    
+    Args:
+        search_query: Optional text to search in name, description, and instructions
+        domains: Optional list of domains to filter by
+        tone: Optional tone to filter by
+        
+    Returns:
+        List of filtered roles
+    """
+    roles = list(self.roles.values())
+    
+    # Apply filters if provided
+    if search_query:
+        search_query = search_query.lower()
+        roles = [
+            role for role in roles if (
+                search_query in role.name.lower() or
+                search_query in role.description.lower() or
+                search_query in role.instructions.lower()
+            )
+        ]
+    
+    if domains:
+        # Filter roles that have at least one of the specified domains
+        roles = [
+            role for role in roles if any(domain in role.domains for domain in domains)
+        ]
+    
+    if tone:
+        roles = [role for role in roles if role.tone == tone]
+    
+    return roles
 ```
 
 ## Security and Compliance

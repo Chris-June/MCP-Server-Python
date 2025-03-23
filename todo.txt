@@ -42,7 +42,8 @@
 - [ ] Implement WebSocket support for bidirectional communication
 - [✅] Create frontend demo with React
 - [✅] Add role editing functionality
-- [] Implement role search and filtering
+- [✅] Implement role search and filtering
+- [✅] Update documentation for role search and filtering
 - [ ] Add role templates for quick creation
 - [ ] Implement role versioning and history
 - [ ] Add support for LangGraph agents and RAG pipelines

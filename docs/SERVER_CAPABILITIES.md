@@ -13,6 +13,10 @@
 - **Custom Role Creation**: Create specialized roles with custom instructions
 - **Role Customization**: Update existing roles with new instructions or tones
 - **Tone Selection**: Configure communication style (professional, friendly, concise, etc.)
+- **Role Search**: Find roles by keywords in name, description, and instructions
+- **Domain Filtering**: Filter roles by specific domains of expertise
+- **Tone Filtering**: Filter roles by communication style preference
+- **Combined Filtering**: Apply multiple filters simultaneously for precise results
 
 ### 3. Technical Capabilities
 - **OpenAI GPT-4o-mini Integration**
@@ -40,6 +44,8 @@
 - **Streaming Support**: Server-sent events for real-time responses
 - **Dependency Injection**: Clean service architecture with dependency management
 - **Async Processing**: Non-blocking operations for better performance
+- **Advanced Search**: Text-based search with filtering capabilities
+- **Domain Discovery**: Retrieve all unique domains used across roles
 
 ### 5. Memory Management
 - **Vector Similarity Search**: Find relevant memories based on query embeddings
@@ -74,6 +80,9 @@
 - **Knowledge Management**: Store and retrieve important information
 - **Interactive Conversations**: Real-time streaming responses for better UX
 - **Custom AI Advisors**: Create specialized roles for specific domains
+- **Role Discovery**: Find the most appropriate role for specific needs using search and filtering
+- **Domain-Specific Assistance**: Quickly locate roles with expertise in particular domains
+- **Communication Style Matching**: Find roles that match preferred communication styles
 
 ## Future Enhancements
 - Database integration for persistent storage

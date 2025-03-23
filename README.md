@@ -13,6 +13,7 @@ MCP (Model Context Protocol) is a sophisticated AI-powered server designed to pr
 - 🔄 Dynamic context switching based on conversation triggers
 - 📝 Enhanced markdown formatting for professional-looking content
 - 🖼️ Multi-modal context support for processing images and other media
+- 🔍 Advanced role search and filtering by keywords, domains, and tone
 
 ## Technology Stack
 - **Backend**: Python with asyncio
@@ -52,6 +53,14 @@ EMBEDDING_MODEL=text-embedding-ada-002
 
 ## Recent Improvements
 
+### Role Search and Filtering
+- Implemented advanced search capabilities for finding roles by keywords
+- Added domain-based filtering to find roles with specific expertise
+- Created tone-based filtering for communication style preferences
+- Added API endpoints for role search with combined filtering options
+- Implemented domain discovery endpoint to retrieve all unique domains
+- Created comprehensive test suite for search and filtering functionality
+
 ### Multi-Modal Context Support
 - Added support for processing images alongside text queries
 - Implemented dedicated multi-modal processing service
@@ -85,6 +94,10 @@ Detailed documentation is available in the `docs` directory:
 - `ARCHITECTURE.md`: System design and component interactions
 - `SERVICES.md`: Core business logic implementation
 - `SERVER_CAPABILITIES.md`: Features and capabilities
+- `multimodal_context_support.md`: Multi-modal processing capabilities
+- `role_search_filtering.md`: Role search and filtering functionality
+- `role_editing.md`: Role management and editing features
+- `CONTEXT_SWITCHING.md`: Dynamic context switching between roles
 
 ## Contributing
 Please read CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.
